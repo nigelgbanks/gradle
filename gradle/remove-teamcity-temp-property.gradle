@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-allprojects { project ->
-    if (project.hasProperty("teamcity")) {
-        println "Original teamcity.build.tempDir: ${project.teamcity["teamcity.build.tempDir"]}"
-        project.teamcity["teamcity.build.tempDir"] = ''
-        println "Patched teamcity.build.tempDir: ${project.teamcity["teamcity.build.tempDir"]}"
-    }
+if (project.hasProperty("teamcity")) {
+    println "Original teamcity.build.tempDir: ${project.teamcity["teamcity.build.tempDir"]}"
+    project.teamcity["teamcity.build.tempDir"] = ''
+    println "Patched teamcity.build.tempDir: ${project.teamcity["teamcity.build.tempDir"]}"
 }
