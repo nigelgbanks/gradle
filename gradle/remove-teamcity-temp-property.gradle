@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-allprojects { project ->
+subprojects { project ->
     if (project.hasProperty("teamcity")) {
-        project.afterEvaluate {
+        project.beforeEvaluate {
             println "Original project: ${project} teamcity.build.tempDir: ${project.teamcity["teamcity.build.tempDir"]}"
             project.teamcity["teamcity.build.tempDir"] = ''
             println "Patched project ${project} teamcity.build.tempDir: ${project.teamcity["teamcity.build.tempDir"]}"
