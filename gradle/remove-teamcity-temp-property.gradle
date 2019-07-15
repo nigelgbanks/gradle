@@ -16,8 +16,10 @@
 
 allprojects { project ->
     if (project.hasProperty("teamcity")) {
-        println "Original project: ${project} teamcity.build.tempDir: ${project.teamcity["teamcity.build.tempDir"]}"
-        project.teamcity["teamcity.build.tempDir"] = ''
-        println "Patched project ${project} teamcity.build.tempDir: ${project.teamcity["teamcity.build.tempDir"]}"
+        project.afterEvaluate {
+            println "Original project: ${project} teamcity.build.tempDir: ${project.teamcity["teamcity.build.tempDir"]}"
+            project.teamcity["teamcity.build.tempDir"] = ''
+            println "Patched project ${project} teamcity.build.tempDir: ${project.teamcity["teamcity.build.tempDir"]}"
+        }
     }
 }
