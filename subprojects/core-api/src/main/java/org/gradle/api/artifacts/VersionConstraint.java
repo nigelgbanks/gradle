@@ -137,4 +137,12 @@ public interface VersionConstraint extends Describable {
      * @return the list of rejected versions
      */
     List<String> getRejectedVersions();
+
+    /**
+     * The version constraint wins over other transitively brought in constraints on the same component.
+     *
+     * @since 5.7
+     */
+    @Incubating
+    boolean isForSubgraph();
 }
