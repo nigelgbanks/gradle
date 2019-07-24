@@ -31,6 +31,9 @@ import static java.lang.String.format;
 import static org.gradle.internal.Cast.uncheckedCast;
 
 public class ExtensionsStorage {
+    public void noBuildCache() {
+
+    }
 
     private final Map<String, ExtensionHolder> extensions = new LinkedHashMap<String, ExtensionHolder>();
 
