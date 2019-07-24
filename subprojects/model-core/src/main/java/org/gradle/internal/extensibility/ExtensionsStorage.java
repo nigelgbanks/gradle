@@ -31,7 +31,7 @@ import static java.lang.String.format;
 import static org.gradle.internal.Cast.uncheckedCast;
 
 public class ExtensionsStorage {
-    public void noBuildCache() {
+    public void noBuildCache2() {
 
     }
 
