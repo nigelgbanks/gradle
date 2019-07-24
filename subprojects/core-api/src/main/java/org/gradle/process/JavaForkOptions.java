@@ -217,8 +217,10 @@ public interface JavaForkOptions extends ProcessForkOptions {
      * {@link #debugOptions(Action)}.
      *
      * @return true when debugging is enabled, false to disable.
+     * @deprecated Use the {@code enabled} property on the result of {@link #getDebugOptions()}
      */
     @Input
+    @Deprecated
     boolean getDebug();
 
     /**
@@ -228,7 +230,9 @@ public interface JavaForkOptions extends ProcessForkOptions {
      * The debug properties (e.g. the port number) can be configured in {@link #debugOptions(Action)}.
      *
      * @param enabled true to enable debugging, false to disable.
+     * @deprecated Use the {@code enabled} property on the result of {@link #getDebugOptions()}
      */
+    @Deprecated
     void setDebug(boolean enabled);
 
     /**
