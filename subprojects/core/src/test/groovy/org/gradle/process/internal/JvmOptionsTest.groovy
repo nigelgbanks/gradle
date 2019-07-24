@@ -181,26 +181,18 @@ class JvmOptionsTest extends Specification {
         "temp directory"          | JAVA_IO_TMPDIR_KEY       | "/some/tmp/folder"
     }
 
-    def "can enter debug mode"() {
-        def opts = createOpts()
-        when:
-        opts.debug = true
-        then:
-        opts.debug
-    }
-
     def "can enter debug mode after setting other options"() {
         def opts = createOpts()
         when:
         opts.jvmArgs(fromString('-Xmx1G -Xms1G'))
-        opts.debug = true
+        opts.debugOptions.enabled = true
         then:
         opts.allJvmArgs.containsAll(['-Xmx1G', '-Xms1G', '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005'])
     }
 
     def "can enter debug mode before setting other options"() {
         def opts = createOpts()
-        opts.debug = true
+        opts.debugOptions.enabled = true
         when:
         opts.jvmArgs(fromString('-Xmx1G -Xms1G'))
         then:
@@ -212,7 +204,7 @@ class JvmOptionsTest extends Specification {
         def opts = createOpts()
 
         when:
-        opts.debug = true
+        opts.debugOptions.enabled = true
         opts.debugOptions.port.set(port)
         opts.debugOptions.server.set(server)
         opts.debugOptions.suspend.set(suspend)

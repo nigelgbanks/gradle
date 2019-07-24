@@ -194,12 +194,12 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
 
     @Override
     public boolean getDebug() {
-        return options.getDebug();
+        return options.getDebugOptions().getEnabled().get();
     }
 
     @Override
     public void setDebug(boolean enabled) {
-        options.setDebug(enabled);
+        options.getDebugOptions().getEnabled().set(enabled);
     }
 
     public JavaDebugOptions getDebugOptions() {

@@ -84,8 +84,8 @@ public interface Property<T> extends Provider<T>, HasConfigurableValue {
      *
      * @param value The value.
      * @return this
-     * @since 5.1
-     */
+         * @since 5.1
+    */
     Property<T> convention(T value);
 
     /**
@@ -107,4 +107,4 @@ public interface Property<T> extends Provider<T>, HasConfigurableValue {
      * @since 5.0
      */
     void finalizeValue();
-}
+    }

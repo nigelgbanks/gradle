@@ -170,7 +170,7 @@ public class DaemonParameters {
 
     public void setDebug(boolean debug) {
         userDefinedImmutableJvmArgs = userDefinedImmutableJvmArgs || debug;
-        jvmOptions.setDebug(debug);
+        jvmOptions.getDebugOptions().getEnabled().set(debug);
     }
 
     public DaemonParameters setBaseDir(File baseDir) {
@@ -179,7 +179,7 @@ public class DaemonParameters {
     }
 
     public boolean getDebug() {
-        return jvmOptions.getDebug();
+        return jvmOptions.getDebugOptions().getEnabled().get();
     }
 
     public boolean isForeground() {

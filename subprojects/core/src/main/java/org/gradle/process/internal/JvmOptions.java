@@ -305,14 +305,6 @@ public class JvmOptions {
         assertionsEnabled = enabled;
     }
 
-    public boolean getDebug() {
-        return debugOptions.getEnabled().get();
-    }
-
-    public void setDebug(boolean enabled) {
-        debugOptions.getEnabled().set(enabled);
-    }
-
     public JavaDebugOptions getDebugOptions() {
         return debugOptions;
     }
