@@ -30,6 +30,7 @@ import org.gradle.internal.component.model.AttributeConfigurationSelector;
 import org.gradle.internal.component.model.ComponentResolveMetadata;
 import org.gradle.internal.component.model.ConfigurationMetadata;
 import org.gradle.internal.component.model.DependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.ForcingDependencyMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
@@ -40,15 +41,15 @@ import java.util.List;
 public class GradleDependencyMetadata implements ModuleDependencyMetadata, ForcingDependencyMetadata {
     private final ModuleComponentSelector selector;
     private final List<ExcludeMetadata> excludes;
-    private final boolean constraint;
+    private final DependencyMetadataType type;
     private final String reason;
     private final boolean force;
 
-    public GradleDependencyMetadata(ModuleComponentSelector selector, List<ExcludeMetadata> excludes, boolean constraint, String reason, boolean force) {
+    public GradleDependencyMetadata(ModuleComponentSelector selector, List<ExcludeMetadata> excludes, DependencyMetadataType type, String reason, boolean force) {
         this.selector = selector;
         this.excludes = excludes;
         this.reason = reason;
-        this.constraint = constraint;
+        this.type = type;
         this.force = force;
     }
 
@@ -62,7 +63,12 @@ public class GradleDependencyMetadata implements ModuleDependencyMetadata, Forci
         if (requestedVersion.equals(selector.getVersionConstraint())) {
             return this;
         }
-        return new GradleDependencyMetadata(DefaultModuleComponentSelector.newSelector(selector.getModuleIdentifier(), requestedVersion, selector.getAttributes(), selector.getRequestedCapabilities()), excludes, constraint, reason, force);
+        return new GradleDependencyMetadata(DefaultModuleComponentSelector.newSelector(selector.getModuleIdentifier(), requestedVersion, selector.getAttributes(), selector.getRequestedCapabilities()), excludes, type, reason, force);
+    }
+
+    @Override
+    public ModuleDependencyMetadata withType(DependencyMetadataType newType) {
+        return new GradleDependencyMetadata(selector, excludes, newType, reason, force);
     }
 
     @Override
@@ -70,13 +76,13 @@ public class GradleDependencyMetadata implements ModuleDependencyMetadata, Forci
         if (Objects.equal(reason, this.reason)) {
             return this;
         }
-        return new GradleDependencyMetadata(selector, excludes, constraint, reason, force);
+        return new GradleDependencyMetadata(selector, excludes, type, reason, force);
     }
 
     @Override
     public DependencyMetadata withTarget(ComponentSelector target) {
         if (target instanceof ModuleComponentSelector) {
-            return new GradleDependencyMetadata((ModuleComponentSelector) target, excludes, constraint, reason, force);
+            return new GradleDependencyMetadata((ModuleComponentSelector) target, excludes, type, reason, force);
         }
         return new DefaultProjectDependencyMetadata((ProjectComponentSelector) target, this);
     }
@@ -110,8 +116,8 @@ public class GradleDependencyMetadata implements ModuleDependencyMetadata, Forci
     }
 
     @Override
-    public boolean isConstraint() {
-        return constraint;
+    public DependencyMetadataType getType() {
+        return type;
     }
 
     @Override
@@ -131,7 +137,7 @@ public class GradleDependencyMetadata implements ModuleDependencyMetadata, Forci
 
     @Override
     public ForcingDependencyMetadata forced() {
-        return new GradleDependencyMetadata(selector, excludes, constraint, reason, true);
+        return new GradleDependencyMetadata(selector, excludes, type, reason, true);
     }
 
     @Override
@@ -143,7 +149,7 @@ public class GradleDependencyMetadata implements ModuleDependencyMetadata, Forci
             return false;
         }
         GradleDependencyMetadata that = (GradleDependencyMetadata) o;
-        return constraint == that.constraint &&
+        return type == that.type &&
             force == that.force &&
             Objects.equal(selector, that.selector) &&
             Objects.equal(excludes, that.excludes) &&
@@ -152,6 +158,6 @@ public class GradleDependencyMetadata implements ModuleDependencyMetadata, Forci
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(selector, excludes, constraint, reason, force);
+        return Objects.hashCode(selector, excludes, type, reason, force);
     }
 }

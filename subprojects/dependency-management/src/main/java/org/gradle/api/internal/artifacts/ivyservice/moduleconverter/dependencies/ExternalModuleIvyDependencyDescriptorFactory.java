@@ -24,6 +24,7 @@ import org.gradle.api.internal.artifacts.DefaultModuleIdentifier;
 import org.gradle.api.internal.artifacts.VersionConstraintInternal;
 import org.gradle.internal.component.external.model.DefaultModuleComponentSelector;
 import org.gradle.internal.component.local.model.DslOriginDependencyMetadataWrapper;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.LocalComponentDependencyMetadata;
 import org.gradle.internal.component.model.LocalOriginDependencyMetadata;
@@ -54,7 +55,7 @@ public class ExternalModuleIvyDependencyDescriptorFactory extends AbstractIvyDep
                 dependency.getAttributes(),
                 dependency.getTargetConfiguration(),
                 convertArtifacts(dependency.getArtifacts()),
-                excludes, force, changing, transitive, false, dependency.getReason());
+                excludes, force, changing, transitive, DependencyMetadataType.TRADITIONAL_DEPENDENCY, dependency.getReason());
         return new DslOriginDependencyMetadataWrapper(dependencyMetaData, dependency);
     }
 

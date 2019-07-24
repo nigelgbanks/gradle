@@ -26,6 +26,7 @@ import org.gradle.api.internal.artifacts.DefaultModuleIdentifier;
 import org.gradle.api.internal.artifacts.dsl.dependencies.PlatformSupport;
 import org.gradle.api.internal.attributes.ImmutableAttributes;
 import org.gradle.internal.component.external.descriptor.Configuration;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 
 import java.util.ArrayList;
@@ -66,13 +67,15 @@ public class LazyToRealisedModuleComponentResolveMetadataHelper {
         for (ComponentVariant.Dependency dependency : dependencies) {
             ModuleComponentSelector selector = DefaultModuleComponentSelector.newSelector(DefaultModuleIdentifier.newId(dependency.getGroup(), dependency.getModule()), dependency.getVersionConstraint(), dependency.getAttributes(), dependency.getRequestedCapabilities());
             List<ExcludeMetadata> excludes = dependency.getExcludes();
-            result.add(new GradleDependencyMetadata(selector, excludes, false, dependency.getReason(), force));
+            result.add(new GradleDependencyMetadata(selector, excludes,
+                dependency.isInheritSubgraphConstraints() ? DependencyMetadataType.INHERITING_DEPENDENCY : DependencyMetadataType.TRADITIONAL_DEPENDENCY,
+                dependency.getReason(), force));
         }
         for (ComponentVariant.DependencyConstraint dependencyConstraint : dependencyConstraints) {
             result.add(new GradleDependencyMetadata(
                 DefaultModuleComponentSelector.newSelector(DefaultModuleIdentifier.newId(dependencyConstraint.getGroup(), dependencyConstraint.getModule()), dependencyConstraint.getVersionConstraint(), dependencyConstraint.getAttributes(), ImmutableList.of()),
                 Collections.<ExcludeMetadata>emptyList(),
-                true,
+                DependencyMetadataType.CONSTRAINT_ONLY,
                 dependencyConstraint.getReason(),
                 force
             ));

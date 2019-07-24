@@ -36,6 +36,7 @@ import org.gradle.internal.component.external.model.VariantDerivationStrategy;
 import org.gradle.internal.component.external.model.VariantMetadataRules;
 import org.gradle.internal.component.model.ConfigurationMetadata;
 import org.gradle.internal.component.model.DefaultIvyArtifactName;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
 import org.gradle.internal.component.model.ModuleSource;
@@ -304,8 +305,8 @@ public class DefaultMavenModuleResolveMetadata extends AbstractLazyModuleCompone
          * Dependencies in the "optional" configuration are never 'pending'.
          */
         @Override
-        public boolean isConstraint() {
-            return false;
+        public DependencyMetadataType getType() {
+            return DependencyMetadataType.TRADITIONAL_DEPENDENCY;
         }
     }
 }

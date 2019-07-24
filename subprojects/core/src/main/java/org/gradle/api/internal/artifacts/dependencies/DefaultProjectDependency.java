@@ -41,6 +41,7 @@ public class DefaultProjectDependency extends AbstractModuleDependency implement
     private final ProjectInternal dependencyProject;
     private final boolean buildProjectDependencies;
     private final ProjectAccessListener projectAccessListener;
+    private boolean inheritSubgraphConstraints;
 
     public DefaultProjectDependency(ProjectInternal dependencyProject, ProjectAccessListener projectAccessListener, boolean buildProjectDependencies) {
         this(dependencyProject, null, projectAccessListener, buildProjectDependencies);
@@ -91,6 +92,16 @@ public class DefaultProjectDependency extends AbstractModuleDependency implement
             getTargetConfiguration(), projectAccessListener, buildProjectDependencies);
         copyTo(copiedProjectDependency);
         return copiedProjectDependency;
+    }
+
+    @Override
+    public void inheritSubgraphConstraints() {
+        this.inheritSubgraphConstraints = true;
+    }
+
+    @Override
+    public boolean isInheritSubgraphConstraints() {
+        return this.inheritSubgraphConstraints;
     }
 
     @Override

@@ -70,10 +70,12 @@ public interface DependencyMetadata {
     boolean isTransitive();
 
     /**
-     * Is this a strong dependency, does it is merely a constraint on the module to select if brought in
-     * by another dependency? ("Optional" dependencies are "constraints")
+     * What kind of "dependency" is this metadata referring to:
+     * - a traditional strong dependency (requirement + constraint)
+     * - a strong dependency that inherits subgraph constraints (requirement + constraint + subgraph inheritance)
+     * - only a constraint
      */
-    boolean isConstraint();
+    DependencyMetadataType getType();
 
     /**
      * An optional human readable reason why this dependency is used.

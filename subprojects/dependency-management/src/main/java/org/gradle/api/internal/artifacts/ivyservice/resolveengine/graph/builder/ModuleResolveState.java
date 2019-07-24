@@ -33,6 +33,7 @@ import org.gradle.api.internal.attributes.AttributeMergingException;
 import org.gradle.api.internal.attributes.ImmutableAttributes;
 import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.internal.component.model.DependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ForcingDependencyMetadata;
 import org.gradle.internal.id.IdGenerator;
 import org.gradle.internal.resolve.resolver.ComponentMetaDataResolver;
@@ -306,7 +307,7 @@ class ModuleResolveState implements CandidateModule {
     private ImmutableAttributes appendAttributes(ImmutableAttributes dependencyAttributes, SelectorState selectorState) {
         try {
             DependencyMetadata dependencyMetadata = selectorState.getDependencyMetadata();
-            boolean constraint = dependencyMetadata.isConstraint();
+            boolean constraint = dependencyMetadata.getType() == DependencyMetadataType.CONSTRAINT_ONLY;
             if (constraint) {
                 ComponentSelector selector = dependencyMetadata.getSelector();
                 ImmutableAttributes attributes = ((AttributeContainerInternal) selector.getAttributes()).asImmutable();

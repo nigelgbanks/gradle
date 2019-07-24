@@ -48,6 +48,7 @@ import org.gradle.internal.component.local.model.LocalFileDependencyMetadata;
 import org.gradle.internal.component.model.ComponentResolveMetadata;
 import org.gradle.internal.component.model.ConfigurationMetadata;
 import org.gradle.internal.component.model.DependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.SelectedByVariantMatchingConfigurationMetadata;
 import org.gradle.internal.resolve.ModuleVersionResolveException;
 import org.slf4j.Logger;
@@ -369,7 +370,7 @@ public class NodeState implements DependencyGraphNode {
             for (DependencyState dependencyState : dependencies(resolutionFilter)) {
                 dependencyState = maybeSubstitute(dependencyState, resolveState.getDependencySubstitutionApplicator());
                 PendingDependenciesVisitor.PendingState pendingState = pendingDepsVisitor.maybeAddAsPendingDependency(this, dependencyState);
-                if (dependencyState.getDependency().isConstraint()) {
+                if (dependencyState.getDependency().getType() == DependencyMetadataType.CONSTRAINT_ONLY) {
                     registerActivatingConstraint(dependencyState);
                 }
                 if (!pendingState.isPending()) {
@@ -675,7 +676,7 @@ public class NodeState implements DependencyGraphNode {
     }
 
     private static boolean isConstraint(EdgeState dependencyEdge) {
-        return dependencyEdge.getDependencyMetadata().isConstraint();
+        return dependencyEdge.getDependencyMetadata().getType() == DependencyMetadataType.CONSTRAINT_ONLY;
     }
 
     private ExcludeSpec joinEdgeAndNodeExclusionsThenCacheResult(ExcludeSpec nodeExclusions, ExcludeSpec edgeExclusions, int incomingEdgeCount) {

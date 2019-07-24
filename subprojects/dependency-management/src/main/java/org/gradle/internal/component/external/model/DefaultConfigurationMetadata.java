@@ -25,6 +25,7 @@ import org.gradle.api.internal.attributes.ImmutableAttributes;
 import org.gradle.internal.Cast;
 import org.gradle.internal.Factory;
 import org.gradle.internal.component.model.DependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.ForcingDependencyMetadata;
 
@@ -123,11 +124,11 @@ public class DefaultConfigurationMetadata extends AbstractConfigurationMetadata 
         switch (dependencyFilter) {
             case CONSTRAINTS_ONLY:
             case FORCED_CONSTRAINTS_ONLY:
-                filtered = withConstraints(true, filtered);
+                filtered = withConstraints(DependencyMetadataType.CONSTRAINT_ONLY, filtered);
                 break;
             case DEPENDENCIES_ONLY:
             case FORCED_DEPENDENCIES_ONLY:
-                filtered = withConstraints(false, filtered);
+                filtered = withConstraints(DependencyMetadataType.TRADITIONAL_DEPENDENCY, filtered);
                 break;
         }
         switch (dependencyFilter) {
@@ -183,14 +184,14 @@ public class DefaultConfigurationMetadata extends AbstractConfigurationMetadata 
         return dependencies.build();
     }
 
-    private ImmutableList<ModuleDependencyMetadata> withConstraints(boolean constraint, ImmutableList<ModuleDependencyMetadata> configDependencies) {
+    private ImmutableList<ModuleDependencyMetadata> withConstraints(DependencyMetadataType dependencyMetadataType, ImmutableList<ModuleDependencyMetadata> configDependencies) {
         if (configDependencies.isEmpty()) {
             return ImmutableList.of();
         }
         int count = 0;
         ImmutableList.Builder<ModuleDependencyMetadata> filtered = null;
         for (ModuleDependencyMetadata configDependency : configDependencies) {
-            if (configDependency.isConstraint() == constraint) {
+            if (configDependency.getType() == dependencyMetadataType) {
                 if (filtered == null) {
                     filtered = new ImmutableList.Builder<ModuleDependencyMetadata>();
                 }

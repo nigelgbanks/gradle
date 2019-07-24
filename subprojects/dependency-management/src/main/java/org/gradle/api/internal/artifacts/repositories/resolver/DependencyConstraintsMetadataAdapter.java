@@ -19,6 +19,7 @@ package org.gradle.api.internal.artifacts.repositories.resolver;
 import org.gradle.api.artifacts.DependencyConstraintMetadata;
 import org.gradle.api.artifacts.DependencyConstraintsMetadata;
 import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.reflect.Instantiator;
 import org.gradle.internal.typeconversion.NotationParser;
 
@@ -39,7 +40,7 @@ public class DependencyConstraintsMetadataAdapter extends AbstractDependenciesMe
     }
 
     @Override
-    protected boolean isConstraint() {
-        return true;
+    protected DependencyMetadataType getType(DependencyConstraintMetadata details) {
+        return DependencyMetadataType.CONSTRAINT_ONLY;
     }
 }

@@ -19,6 +19,7 @@ package org.gradle.api.internal.artifacts.repositories.resolver;
 import org.gradle.api.artifacts.DirectDependencyMetadata;
 import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.internal.component.external.model.ModuleDependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 
 import java.util.List;
 
@@ -26,5 +27,15 @@ public class DirectDependencyMetadataAdapter extends AbstractDependencyMetadataA
 
     public DirectDependencyMetadataAdapter(ImmutableAttributesFactory attributesFactory, List<ModuleDependencyMetadata> container, int originalIndex) {
         super(attributesFactory, container, originalIndex);
+    }
+
+    @Override
+    public void setInheritSubgraphConstraints(boolean value) {
+        updateMetadata(getOriginalMetadata().withType(value ? DependencyMetadataType.INHERITING_DEPENDENCY : DependencyMetadataType.TRADITIONAL_DEPENDENCY));
+    }
+
+    @Override
+    public boolean isInheritSubgraphConstraints() {
+        return getOriginalMetadata().getType() == DependencyMetadataType.INHERITING_DEPENDENCY;
     }
 }

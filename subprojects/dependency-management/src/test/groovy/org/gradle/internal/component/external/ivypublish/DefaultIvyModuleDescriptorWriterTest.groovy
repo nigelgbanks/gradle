@@ -26,6 +26,7 @@ import org.gradle.internal.component.external.model.DefaultModuleComponentIdenti
 import org.gradle.internal.component.external.model.DefaultModuleComponentSelector
 import org.gradle.internal.component.local.model.BuildableLocalConfigurationMetadata
 import org.gradle.internal.component.model.DefaultIvyArtifactName
+import org.gradle.internal.component.model.DependencyMetadataType
 import org.gradle.internal.component.model.LocalComponentDependencyMetadata
 import org.gradle.test.fixtures.file.TestNameTestDirectoryProvider
 import org.junit.Rule
@@ -76,7 +77,7 @@ class DefaultIvyModuleDescriptorWriterTest extends Specification {
     def addDependencyDescriptor(BuildableLocalConfigurationMetadata metadata, String organisation = "org.test", String moduleName, String revision = "1.0") {
         def dep = new LocalComponentDependencyMetadata(metadata.getComponentId(),
                 DefaultModuleComponentSelector.newSelector(DefaultModuleIdentifier.newId(organisation, moduleName), new DefaultMutableVersionConstraint(revision)),
-                "runtime", null, ImmutableAttributes.EMPTY, "default", [] as List, [], false, false, true, false, null)
+                "runtime", null, ImmutableAttributes.EMPTY, "default", [] as List, [], false, false, true, DependencyMetadataType.TRADITIONAL_DEPENDENCY, null)
         metadata.addDependency(dep)
     }
 

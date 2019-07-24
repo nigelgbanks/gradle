@@ -57,6 +57,7 @@ import org.gradle.internal.component.local.model.RootLocalComponentMetadata
 import org.gradle.internal.component.model.ComponentOverrideMetadata
 import org.gradle.internal.component.model.ComponentResolveMetadata
 import org.gradle.internal.component.model.DependencyMetadata
+import org.gradle.internal.component.model.DependencyMetadataType
 import org.gradle.internal.component.model.ExcludeMetadata
 import org.gradle.internal.component.model.IvyArtifactName
 import org.gradle.internal.component.model.LocalComponentDependencyMetadata
@@ -1103,7 +1104,7 @@ class DependencyGraphBuilderTest extends Specification {
         }
         def dependencyMetaData = new LocalComponentDependencyMetadata(from.id, componentSelector,
                 "default", null, ImmutableAttributes.EMPTY, "default", [] as List<IvyArtifactName>,
-                excludeRules, force, false, transitive, false, null)
+                excludeRules, force, false, transitive, DependencyMetadataType.TRADITIONAL_DEPENDENCY, null)
         dependencyMetaData = new DslOriginDependencyMetadataWrapper(dependencyMetaData, Stub(ModuleDependency) {
             getAttributes() >> ImmutableAttributes.EMPTY
         })

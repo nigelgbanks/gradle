@@ -35,6 +35,7 @@ import org.gradle.internal.component.local.model.DefaultLibraryComponentSelector
 import org.gradle.internal.component.local.model.DefaultLocalComponentMetadata;
 import org.gradle.internal.component.local.model.OpaqueComponentIdentifier;
 import org.gradle.internal.component.local.model.RootConfigurationMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
 import org.gradle.internal.component.model.LocalComponentDependencyMetadata;
@@ -165,7 +166,7 @@ public class DefaultLibraryLocalComponentMetadata extends DefaultLocalComponentM
             selector, usageConfigurationName, null, ImmutableAttributes.EMPTY, mappedUsageConfiguration,
                 ImmutableList.<IvyArtifactName>of(),
             EXCLUDE_RULES,
-            false, false, true, false, null);
+            false, false, true, DependencyMetadataType.TRADITIONAL_DEPENDENCY, null);
     }
 
     @Override

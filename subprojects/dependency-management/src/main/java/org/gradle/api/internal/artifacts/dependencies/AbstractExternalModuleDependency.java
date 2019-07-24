@@ -25,11 +25,13 @@ import org.gradle.api.artifacts.MutableVersionConstraint;
 import org.gradle.api.artifacts.VersionConstraint;
 import org.gradle.api.internal.artifacts.DefaultModuleIdentifier;
 import org.gradle.api.internal.artifacts.ModuleVersionSelectorStrictSpec;
+import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.ExactVersionSelector;
 
 public abstract class AbstractExternalModuleDependency extends AbstractModuleDependency implements ExternalModuleDependency {
     private final ModuleIdentifier moduleIdentifier;
     private boolean changing;
     private boolean force;
+    private boolean inheritSubgraphConstraints;
     private final DefaultMutableVersionConstraint versionConstraint;
 
     public AbstractExternalModuleDependency(ModuleIdentifier module, String version, String configuration) {
@@ -112,6 +114,25 @@ public abstract class AbstractExternalModuleDependency extends AbstractModuleDep
     @Override
     public ModuleIdentifier getModule() {
         return moduleIdentifier;
+    }
+
+    @Override
+    public void inheritSubgraphConstraints() {
+        String versionString = getVersion();
+        assertExactVersion(versionString);
+        versionConstraint.strictly(versionString);
+        this.inheritSubgraphConstraints = true;
+    }
+
+    @Override
+    public boolean isInheritSubgraphConstraints() {
+        return this.inheritSubgraphConstraints;
+    }
+
+    private void assertExactVersion(String versionString) {
+        if (!ExactVersionSelector.isExact(versionString)) {
+            throw new InvalidUserDataException("Subgraph constraints inheritance is not supported for dynamic versions!");
+        }
     }
 
     static ModuleIdentifier assertModuleId(String group, String name) {

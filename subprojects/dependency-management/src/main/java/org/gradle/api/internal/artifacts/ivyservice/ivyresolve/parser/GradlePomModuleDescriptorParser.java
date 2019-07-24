@@ -37,6 +37,7 @@ import org.gradle.internal.component.external.model.GradleDependencyMetadata;
 import org.gradle.internal.component.external.model.ModuleDependencyMetadata;
 import org.gradle.internal.component.external.model.maven.MavenDependencyDescriptor;
 import org.gradle.internal.component.external.model.maven.MutableMavenModuleResolveMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.resource.local.FileResourceRepository;
 import org.gradle.internal.resource.local.LocallyAvailableExternalResource;
@@ -221,7 +222,7 @@ public final class GradlePomModuleDescriptorParser extends AbstractModuleDescrip
     }
 
     private ModuleDependencyMetadata toDependencyMetadata(ModuleComponentSelector selector) {
-        return new GradleDependencyMetadata(selector, Collections.<ExcludeMetadata>emptyList(), false, null, false);
+        return new GradleDependencyMetadata(selector, Collections.<ExcludeMetadata>emptyList(), DependencyMetadataType.TRADITIONAL_DEPENDENCY, null, false);
     }
 
     private PomReader parsePomResource(DescriptorParseContext parseContext, LocallyAvailableExternalResource localResource, Map<String, String> childProperties) throws SAXException, IOException {

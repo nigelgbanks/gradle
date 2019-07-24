@@ -28,6 +28,7 @@ import org.gradle.api.internal.artifacts.ivyservice.resolveengine.result.Attribu
 import org.gradle.internal.component.external.descriptor.DefaultExclude;
 import org.gradle.internal.component.model.ConfigurationMetadata;
 import org.gradle.internal.component.model.DefaultIvyArtifactName;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
 import org.gradle.internal.serialize.Decoder;
@@ -117,9 +118,12 @@ public abstract class AbstractRealisedModuleResolveMetadataSerializationHelper {
         ModuleComponentSelector selector = componentSelectorSerializer.read(decoder);
         List<ExcludeMetadata> excludes = readMavenExcludes(decoder);
         boolean constraint = decoder.readBoolean();
+        boolean inheriting = decoder.readBoolean();
         boolean force = decoder.readBoolean();
         String reason = decoder.readNullableString();
-        return new GradleDependencyMetadata(selector, excludes, constraint, reason, force);
+        return new GradleDependencyMetadata(selector, excludes,
+            constraint ? DependencyMetadataType.CONSTRAINT_ONLY : inheriting ? DependencyMetadataType.INHERITING_DEPENDENCY : DependencyMetadataType.TRADITIONAL_DEPENDENCY,
+            reason, force);
     }
 
     protected List<ExcludeMetadata> readMavenExcludes(Decoder decoder) throws IOException {
@@ -170,7 +174,8 @@ public abstract class AbstractRealisedModuleResolveMetadataSerializationHelper {
         componentSelectorSerializer.write(encoder, dependencyMetadata.getSelector());
         List<ExcludeMetadata> excludes = dependencyMetadata.getExcludes();
         writeMavenExcludeRules(encoder, excludes);
-        encoder.writeBoolean(dependencyMetadata.isConstraint());
+        encoder.writeBoolean(dependencyMetadata.getType() == DependencyMetadataType.CONSTRAINT_ONLY);
+        encoder.writeBoolean(dependencyMetadata.getType() == DependencyMetadataType.INHERITING_DEPENDENCY);
         encoder.writeBoolean(dependencyMetadata.isForce());
         encoder.writeNullableString(dependencyMetadata.getReason());
     }

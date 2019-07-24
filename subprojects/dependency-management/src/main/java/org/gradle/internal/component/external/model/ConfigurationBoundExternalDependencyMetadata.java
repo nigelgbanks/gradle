@@ -30,6 +30,7 @@ import org.gradle.internal.component.model.AttributeConfigurationSelector;
 import org.gradle.internal.component.model.ComponentResolveMetadata;
 import org.gradle.internal.component.model.ConfigurationMetadata;
 import org.gradle.internal.component.model.DependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
 
@@ -135,6 +136,11 @@ public class ConfigurationBoundExternalDependencyMetadata implements ModuleDepen
     }
 
     @Override
+    public ModuleDependencyMetadata withType(DependencyMetadataType newType) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public ModuleDependencyMetadata withReason(String reason) {
         if (Objects.equal(reason, this.getReason())) {
             return this;
@@ -167,8 +173,8 @@ public class ConfigurationBoundExternalDependencyMetadata implements ModuleDepen
     }
 
     @Override
-    public boolean isConstraint() {
-        return isConstraint;
+    public DependencyMetadataType getType() {
+        return isConstraint? DependencyMetadataType.CONSTRAINT_ONLY : DependencyMetadataType.TRADITIONAL_DEPENDENCY;
     }
 
     @Override

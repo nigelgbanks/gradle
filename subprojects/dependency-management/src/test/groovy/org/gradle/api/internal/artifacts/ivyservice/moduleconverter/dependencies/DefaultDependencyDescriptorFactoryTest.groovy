@@ -20,6 +20,7 @@ import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.component.ModuleComponentSelector
 import org.gradle.api.internal.artifacts.dependencies.DefaultDependencyConstraint
 import org.gradle.internal.component.local.model.OpaqueComponentIdentifier
+import org.gradle.internal.component.model.DependencyMetadataType
 import org.gradle.internal.component.model.LocalOriginDependencyMetadata
 import spock.lang.Specification
 
@@ -75,7 +76,7 @@ class DefaultDependencyDescriptorFactoryTest extends Specification {
         def selector = created.selector as ModuleComponentSelector
 
         then:
-        created.constraint
+        created.type == DependencyMetadataType.CONSTRAINT_ONLY
         selector.group == "g"
         selector.module == "m"
         selector.version == "1"

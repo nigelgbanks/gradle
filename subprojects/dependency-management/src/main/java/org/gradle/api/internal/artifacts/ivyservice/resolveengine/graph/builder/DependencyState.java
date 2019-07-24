@@ -21,6 +21,7 @@ import org.gradle.api.internal.artifacts.ComponentSelectorConverter;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.result.ComponentSelectionDescriptorInternal;
 import org.gradle.internal.Describables;
 import org.gradle.internal.component.model.DependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ForcingDependencyMetadata;
 import org.gradle.internal.component.model.LocalOriginDependencyMetadata;
 import org.gradle.internal.resolve.ModuleVersionResolveException;
@@ -128,7 +129,7 @@ class DependencyState {
     }
 
     private void addMainReason(List<ComponentSelectionDescriptorInternal> reasons) {
-        ComponentSelectionDescriptorInternal dependencyDescriptor = dependency.isConstraint() ? CONSTRAINT : REQUESTED;
+        ComponentSelectionDescriptorInternal dependencyDescriptor = dependency.getType() == DependencyMetadataType.CONSTRAINT_ONLY ? CONSTRAINT : REQUESTED;
         String reason = dependency.getReason();
         if (reason != null) {
             dependencyDescriptor = dependencyDescriptor.withDescription(Describables.of(reason));

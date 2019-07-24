@@ -24,6 +24,7 @@ import org.gradle.api.internal.attributes.ImmutableAttributes;
 import org.gradle.internal.component.model.ComponentResolveMetadata;
 import org.gradle.internal.component.model.ConfigurationMetadata;
 import org.gradle.internal.component.model.DependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
 
@@ -51,6 +52,13 @@ public class ModuleDependencyMetadataWrapper implements ModuleDependencyMetadata
         return new ModuleDependencyMetadataWrapper(delegate.withTarget(newSelector));
     }
 
+    @Override
+    public ModuleDependencyMetadata withType(DependencyMetadataType newType) {
+        if (delegate instanceof ModuleDependencyMetadata) {
+            return new ModuleDependencyMetadataWrapper(((ModuleDependencyMetadata) delegate).withType(newType));
+        }
+        throw new UnsupportedOperationException();
+    }
     @Override
     public ModuleDependencyMetadata withReason(String reason) {
         return new ModuleDependencyMetadataWrapper(delegate.withReason(reason));
@@ -87,8 +95,8 @@ public class ModuleDependencyMetadataWrapper implements ModuleDependencyMetadata
     }
 
     @Override
-    public boolean isConstraint() {
-        return delegate.isConstraint();
+    public DependencyMetadataType getType() {
+        return delegate.getType();
     }
 
     @Override

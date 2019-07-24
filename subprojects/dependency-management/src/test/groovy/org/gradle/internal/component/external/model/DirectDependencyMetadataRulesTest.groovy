@@ -18,11 +18,12 @@ package org.gradle.internal.component.external.model
 
 import org.gradle.api.Action
 import org.gradle.api.artifacts.DependenciesMetadata
+import org.gradle.internal.component.model.DependencyMetadataType
 
 class DirectDependencyMetadataRulesTest extends AbstractDependencyMetadataRulesTest {
     @Override
-    boolean addAllDependenciesAsConstraints() {
-        return false
+    DependencyMetadataType expectedDependencyMetadataType() {
+        return DependencyMetadataType.TRADITIONAL_DEPENDENCY
     }
 
     @Override

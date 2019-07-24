@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.gradle.api.artifacts.ModuleIdentifier;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.internal.component.model.DependencyMetadataType;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +38,7 @@ abstract class MessageBuilderHelper {
         for (List<EdgeState> path : acc) {
             EdgeState target = Iterators.getLast(path.iterator());
             StringBuilder sb = new StringBuilder();
-            if (target.getSelector().getDependencyMetadata().isConstraint()) {
+            if (target.getSelector().getDependencyMetadata().getType() == DependencyMetadataType.CONSTRAINT_ONLY) {
                 sb.append("Constraint path ");
             } else {
                 sb.append("Dependency path ");

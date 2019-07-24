@@ -28,6 +28,7 @@ import org.gradle.internal.Describables;
 import org.gradle.internal.DisplayName;
 import org.gradle.internal.component.model.ComponentArtifactMetadata;
 import org.gradle.internal.component.model.ConfigurationMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
 import org.gradle.internal.component.model.VariantResolveMetadata;
@@ -56,13 +57,15 @@ class AbstractVariantBackedConfigurationMetadata implements ConfigurationMetadat
         for (ComponentVariant.Dependency dependency : variant.getDependencies()) {
             ModuleComponentSelector selector = DefaultModuleComponentSelector.newSelector(DefaultModuleIdentifier.newId(dependency.getGroup(), dependency.getModule()), dependency.getVersionConstraint(), dependency.getAttributes(), dependency.getRequestedCapabilities());
             List<ExcludeMetadata> excludes = dependency.getExcludes();
-            dependencies.add(new GradleDependencyMetadata(selector, excludes, false, dependency.getReason(), forcedDependencies));
+            dependencies.add(new GradleDependencyMetadata(selector, excludes,
+                dependency.isInheritSubgraphConstraints() ? DependencyMetadataType.INHERITING_DEPENDENCY : DependencyMetadataType.TRADITIONAL_DEPENDENCY,
+                dependency.getReason(), forcedDependencies));
         }
         for (ComponentVariant.DependencyConstraint dependencyConstraint : variant.getDependencyConstraints()) {
             dependencies.add(new GradleDependencyMetadata(
                 DefaultModuleComponentSelector.newSelector(DefaultModuleIdentifier.newId(dependencyConstraint.getGroup(), dependencyConstraint.getModule()), dependencyConstraint.getVersionConstraint(), dependencyConstraint.getAttributes(), ImmutableList.of()),
                 Collections.<ExcludeMetadata>emptyList(),
-                true,
+                DependencyMetadataType.CONSTRAINT_ONLY,
                 dependencyConstraint.getReason(),
                 forcedDependencies
             ));

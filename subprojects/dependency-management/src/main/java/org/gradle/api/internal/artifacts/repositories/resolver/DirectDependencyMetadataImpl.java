@@ -20,7 +20,19 @@ import org.gradle.api.artifacts.DirectDependencyMetadata;
 
 public class DirectDependencyMetadataImpl extends AbstractDependencyImpl<DirectDependencyMetadata> implements DirectDependencyMetadata {
 
+    private boolean inheritSubgraphConstraints;
+
     public DirectDependencyMetadataImpl(String group, String name, String version) {
         super(group, name, version);
+    }
+
+    @Override
+    public void setInheritSubgraphConstraints(boolean value) {
+        this.inheritSubgraphConstraints = value;
+    }
+
+    @Override
+    public boolean isInheritSubgraphConstraints() {
+        return inheritSubgraphConstraints;
     }
 }

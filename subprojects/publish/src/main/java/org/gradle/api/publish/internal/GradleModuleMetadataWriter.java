@@ -452,6 +452,12 @@ public class GradleModuleMetadataWriter {
             writeExcludes(moduleDependency, additionalExcludes, jsonWriter);
             writeAttributes(moduleDependency.getAttributes(), jsonWriter);
             writeCapabilities("requestedCapabilities", moduleDependency.getRequestedCapabilities(), jsonWriter);
+
+            boolean inheritSubgraphConstraints = moduleDependency.isInheritSubgraphConstraints();
+            if (inheritSubgraphConstraints) {
+                jsonWriter.name("inheritSubgraphConstraints");
+                jsonWriter.value(true);
+            }
         }
         String reason = dependency.getReason();
         if (StringUtils.isNotEmpty(reason)) {

@@ -24,6 +24,7 @@ import org.gradle.api.internal.artifacts.dependencies.ProjectDependencyInternal;
 import org.gradle.api.internal.attributes.AttributeContainerInternal;
 import org.gradle.internal.component.local.model.DefaultProjectComponentSelector;
 import org.gradle.internal.component.local.model.DslOriginDependencyMetadataWrapper;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.LocalComponentDependencyMetadata;
 import org.gradle.internal.component.model.LocalOriginDependencyMetadata;
@@ -54,7 +55,7 @@ public class ProjectIvyDependencyDescriptorFactory extends AbstractIvyDependency
             projectDependency.getTargetConfiguration(),
             convertArtifacts(dependency.getArtifacts()),
             excludes,
-            false, false, dependency.isTransitive(), false, dependency.getReason());
+            false, false, dependency.isTransitive(), dependency.isInheritSubgraphConstraints() ? DependencyMetadataType.INHERITING_DEPENDENCY : DependencyMetadataType.TRADITIONAL_DEPENDENCY, dependency.getReason());
         return new DslOriginDependencyMetadataWrapper(dependencyMetaData, dependency);
     }
 

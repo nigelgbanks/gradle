@@ -16,12 +16,14 @@
 
 package org.gradle.api.internal.artifacts.repositories.resolver
 
+import org.gradle.api.artifacts.DirectDependencyMetadata
 import org.gradle.api.artifacts.component.ModuleComponentSelector
 import org.gradle.api.attributes.Attribute
 import org.gradle.api.internal.artifacts.DefaultModuleIdentifier
 import org.gradle.api.internal.notations.DependencyMetadataNotationParser
 import org.gradle.internal.component.external.model.GradleDependencyMetadata
 import org.gradle.internal.component.model.DependencyMetadata
+import org.gradle.internal.component.model.DependencyMetadataType
 import org.gradle.internal.reflect.DirectInstantiator
 import org.gradle.util.AttributeTestUtil
 import org.gradle.util.TestUtil
@@ -195,12 +197,12 @@ class DependenciesMetadataAdapterTest extends Specification {
         dependenciesMetadata = []
         for (int i = 0; i < size; i++) {
             ModuleComponentSelector requested = newSelector(DefaultModuleIdentifier.newId("org.gradle.test", "module$size"), "1.0")
-            dependenciesMetadata += [ new GradleDependencyMetadata(requested, [], false, null, false) ]
+            dependenciesMetadata += [ new GradleDependencyMetadata(requested, [], DependencyMetadataType.TRADITIONAL_DEPENDENCY, null, false) ]
         }
         adapter = new TestDependenciesMetadataAdapter(dependenciesMetadata)
     }
 
-    class TestDependenciesMetadataAdapter extends AbstractDependenciesMetadataAdapter {
+    class TestDependenciesMetadataAdapter extends AbstractDependenciesMetadataAdapter<DirectDependencyMetadata> {
         TestDependenciesMetadataAdapter(List<DependencyMetadata> dependenciesMetadata) {
             super(AttributeTestUtil.attributesFactory(), dependenciesMetadata, TestUtil.instantiatorFactory().decorateLenient(), DependencyMetadataNotationParser.parser(DirectInstantiator.INSTANCE, DirectDependencyMetadataImpl.class, SimpleMapInterner.notThreadSafe()))
         }
@@ -211,8 +213,8 @@ class DependenciesMetadataAdapterTest extends Specification {
         }
 
         @Override
-        protected boolean isConstraint() {
-            return false
+        protected DependencyMetadataType getType(DirectDependencyMetadata details) {
+            return DependencyMetadataType.TRADITIONAL_DEPENDENCY
         }
     }
 }

@@ -37,6 +37,7 @@ import org.gradle.internal.component.external.model.ivy.IvyDependencyDescriptor
 import org.gradle.internal.component.external.model.maven.MavenDependencyDescriptor
 import org.gradle.internal.component.external.model.maven.MavenDependencyType
 import org.gradle.internal.component.model.ComponentAttributeMatcher
+import org.gradle.internal.component.model.DependencyMetadataType
 import org.gradle.internal.component.model.LocalComponentDependencyMetadata
 import org.gradle.internal.component.model.VariantResolveMetadata
 import org.gradle.util.AttributeTestUtil
@@ -74,17 +75,17 @@ abstract class AbstractDependencyMetadataRulesTest extends Specification {
         schema
     }
 
-    abstract boolean addAllDependenciesAsConstraints()
+    abstract DependencyMetadataType expectedDependencyMetadataType()
 
     abstract void doAddDependencyMetadataRule(MutableModuleComponentResolveMetadata metadataImplementation, String variantName = null, Action<? super DependenciesMetadata> action)
 
     boolean supportedInMetadata(String metadata) {
-        !addAllDependenciesAsConstraints() || metadata == "gradle"
+        expectedDependencyMetadataType() == DependencyMetadataType.TRADITIONAL_DEPENDENCY || metadata == "gradle"
     }
 
     private ivyComponentMetadata(String[] deps) {
         def dependencies
-        if (addAllDependenciesAsConstraints()) {
+        if (expectedDependencyMetadataType() == DependencyMetadataType.CONSTRAINT_ONLY) {
             dependencies = [] //not supported in Ivy metadata
         } else {
             dependencies = deps.collect { name ->
@@ -95,7 +96,7 @@ abstract class AbstractDependencyMetadataRulesTest extends Specification {
     }
     private mavenComponentMetadata(String[] deps) {
         def dependencies = deps.collect { name ->
-            MavenDependencyType type = addAllDependenciesAsConstraints() ? MavenDependencyType.OPTIONAL_DEPENDENCY : MavenDependencyType.DEPENDENCY
+            MavenDependencyType type = expectedDependencyMetadataType() == DependencyMetadataType.CONSTRAINT_ONLY ? MavenDependencyType.OPTIONAL_DEPENDENCY : MavenDependencyType.DEPENDENCY
             new MavenDependencyDescriptor(MavenScope.Compile, type, newSelector(DefaultModuleIdentifier.newId("org.test", name), "1.0"), null, [])
         }
         mavenMetadataFactory.create(componentIdentifier, dependencies)
@@ -105,10 +106,10 @@ abstract class AbstractDependencyMetadataRulesTest extends Specification {
         //gradle metadata is distinguished from maven POM metadata by explicitly defining variants
         defaultVariant = metadata.addVariant("default", attributes)
         deps.each { name ->
-            if (addAllDependenciesAsConstraints()) {
+            if (expectedDependencyMetadataType() == DependencyMetadataType.CONSTRAINT_ONLY) {
                 defaultVariant.addDependencyConstraint("org.test", name, new DefaultMutableVersionConstraint("1.0"), null, ImmutableAttributes.EMPTY)
             } else {
-                defaultVariant.addDependency("org.test", name, new DefaultMutableVersionConstraint("1.0"), [], null, ImmutableAttributes.EMPTY, [])
+                defaultVariant.addDependency("org.test", name, new DefaultMutableVersionConstraint("1.0"), [], null, ImmutableAttributes.EMPTY, [], false)
             }
         }
         metadata
@@ -186,8 +187,8 @@ abstract class AbstractDependencyMetadataRulesTest extends Specification {
         then:
         if (supportedInMetadata(metadataType)) {
             assert dependencies.size() == 2
-            assert dependencies[0].constraint == addAllDependenciesAsConstraints()
-            assert dependencies[1].constraint == addAllDependenciesAsConstraints()
+            assert dependencies[0].type == expectedDependencyMetadataType()
+            assert dependencies[1].type == expectedDependencyMetadataType()
         } else {
             assert dependencies.empty
         }
@@ -223,7 +224,7 @@ abstract class AbstractDependencyMetadataRulesTest extends Specification {
             assert dependencies[0].selector.version == "2.0"
             assert dependencies[0].selector.versionConstraint.strictVersion == "2.0"
             assert dependencies[0].selector.versionConstraint.rejectedVersions[0] == "[3.0,)"
-            assert dependencies[0].constraint == addAllDependenciesAsConstraints()
+            assert dependencies[0].type == expectedDependencyMetadataType()
         } else {
             assert dependencies.empty
         }
@@ -286,7 +287,7 @@ abstract class AbstractDependencyMetadataRulesTest extends Specification {
         def componentIdentifier = DefaultModuleComponentIdentifier.newId(DefaultModuleIdentifier.newId("org.test", "consumer"), "1.0")
         def consumerIdentifier = DefaultModuleVersionIdentifier.newId(componentIdentifier)
         def componentSelector = newSelector(consumerIdentifier.module, new DefaultMutableVersionConstraint(consumerIdentifier.version))
-        def consumer = new LocalComponentDependencyMetadata(componentIdentifier, componentSelector, "default", attributes, ImmutableAttributes.EMPTY, null, [] as List, [], false, false, true, false, null)
+        def consumer = new LocalComponentDependencyMetadata(componentIdentifier, componentSelector, "default", attributes, ImmutableAttributes.EMPTY, null, [] as List, [], false, false, true, DependencyMetadataType.TRADITIONAL_DEPENDENCY, null)
 
         consumer.selectConfigurations(attributes, immutable, schema, [] as Set)[0]
     }

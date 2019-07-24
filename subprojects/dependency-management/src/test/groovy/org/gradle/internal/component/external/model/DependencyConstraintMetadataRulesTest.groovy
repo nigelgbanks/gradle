@@ -23,6 +23,7 @@ import org.gradle.api.internal.artifacts.DependencyManagementTestUtil
 import org.gradle.internal.component.external.descriptor.MavenScope
 import org.gradle.internal.component.external.model.maven.MavenDependencyDescriptor
 import org.gradle.internal.component.external.model.maven.MavenDependencyType
+import org.gradle.internal.component.model.DependencyMetadataType
 
 import static org.gradle.internal.component.external.model.DefaultModuleComponentSelector.newSelector
 
@@ -30,8 +31,8 @@ class DependencyConstraintMetadataRulesTest extends AbstractDependencyMetadataRu
     private final mavenMetadataFactory = DependencyManagementTestUtil.mavenMetadataFactory()
 
     @Override
-    boolean addAllDependenciesAsConstraints() {
-        return true
+    DependencyMetadataType expectedDependencyMetadataType() {
+        return DependencyMetadataType.CONSTRAINT_ONLY
     }
 
     @Override
@@ -62,6 +63,6 @@ class DependencyConstraintMetadataRulesTest extends AbstractDependencyMetadataRu
         then:
         def dependencies = selectTargetConfigurationMetadata(mavenMetadata).dependencies
         dependencies.size() == 1
-        !dependencies[0].constraint
+        dependencies[0].type == DependencyMetadataType.TRADITIONAL_DEPENDENCY
     }
 }

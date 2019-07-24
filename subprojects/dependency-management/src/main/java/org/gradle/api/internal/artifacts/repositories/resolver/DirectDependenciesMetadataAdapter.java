@@ -19,6 +19,7 @@ package org.gradle.api.internal.artifacts.repositories.resolver;
 import org.gradle.api.artifacts.DirectDependenciesMetadata;
 import org.gradle.api.artifacts.DirectDependencyMetadata;
 import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.reflect.Instantiator;
 import org.gradle.internal.typeconversion.NotationParser;
 
@@ -38,7 +39,7 @@ public class DirectDependenciesMetadataAdapter extends AbstractDependenciesMetad
     }
 
     @Override
-    protected boolean isConstraint() {
-        return false;
+    protected DependencyMetadataType getType(DirectDependencyMetadata details) {
+        return details.isInheritSubgraphConstraints() ? DependencyMetadataType.INHERITING_DEPENDENCY : DependencyMetadataType.TRADITIONAL_DEPENDENCY;
     }
 }

@@ -33,6 +33,7 @@ import org.gradle.internal.component.model.ComponentArtifactMetadata;
 import org.gradle.internal.component.model.ComponentResolveMetadata;
 import org.gradle.internal.component.model.ConfigurationMetadata;
 import org.gradle.internal.component.model.DependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
 import org.gradle.internal.resolve.ModuleVersionResolveException;
@@ -77,7 +78,7 @@ class EdgeState implements DependencyGraphEdge {
         this.resolveState = resolveState;
         this.selector = resolveState.getSelector(dependencyState);
         this.isTransitive = from.isTransitive() && dependencyMetadata.isTransitive();
-        this.isConstraint = dependencyMetadata.isConstraint();
+        this.isConstraint = dependencyMetadata.getType() == DependencyMetadataType.CONSTRAINT_ONLY;
         this.hashCode = computeHashCode();
     }
 

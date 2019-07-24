@@ -18,6 +18,7 @@ package org.gradle.api.internal.artifacts.ivyservice.resolveengine.graph.builder
 
 import com.google.common.collect.Lists;
 import org.gradle.api.artifacts.ModuleIdentifier;
+import org.gradle.internal.component.model.DependencyMetadataType;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ class DefaultPendingDependenciesVisitor implements PendingDependenciesVisitor {
     @Override
     public PendingState maybeAddAsPendingDependency(NodeState node, DependencyState dependencyState) {
         ModuleIdentifier key = dependencyState.getModuleIdentifier();
-        boolean isConstraint = dependencyState.getDependency().isConstraint();
+        boolean isConstraint = dependencyState.getDependency().getType() == DependencyMetadataType.CONSTRAINT_ONLY;
         if (!isConstraint) {
             if (markNotPending(key)) {
                 return PendingState.NOT_PENDING_ACTIVATING;

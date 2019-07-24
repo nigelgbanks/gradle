@@ -143,4 +143,10 @@ abstract class ClientModuleDelegate : ClientModule {
 
     override fun getReason(): String? =
         delegate.reason
+
+    override fun inheritSubgraphConstraints() =
+        delegate.inheritSubgraphConstraints()
+
+    override fun isInheritSubgraphConstraints() =
+        delegate.isInheritSubgraphConstraints
 }

@@ -24,6 +24,7 @@ import org.gradle.api.internal.attributes.ImmutableAttributes;
 import org.gradle.internal.component.model.ComponentResolveMetadata;
 import org.gradle.internal.component.model.ConfigurationMetadata;
 import org.gradle.internal.component.model.DependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.ForcingDependencyMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
@@ -46,6 +47,11 @@ public class ForcedDependencyMetadataWrapper implements ForcingDependencyMetadat
     @Override
     public ModuleDependencyMetadata withRequestedVersion(VersionConstraint requestedVersion) {
         return new ForcedDependencyMetadataWrapper(delegate.withRequestedVersion(requestedVersion));
+    }
+
+    @Override
+    public ModuleDependencyMetadata withType(DependencyMetadataType newType) {
+        return new ForcedDependencyMetadataWrapper(delegate.withType(newType));
     }
 
     @Override
@@ -84,8 +90,8 @@ public class ForcedDependencyMetadataWrapper implements ForcingDependencyMetadat
     }
 
     @Override
-    public boolean isConstraint() {
-        return delegate.isConstraint();
+    public DependencyMetadataType getType() {
+        return delegate.getType();
     }
 
     @Override

@@ -18,6 +18,7 @@ package org.gradle.internal.component.external.model;
 import org.gradle.api.artifacts.VersionConstraint;
 import org.gradle.api.artifacts.component.ModuleComponentSelector;
 import org.gradle.internal.component.model.DependencyMetadata;
+import org.gradle.internal.component.model.DependencyMetadataType;
 
 public interface ModuleDependencyMetadata extends DependencyMetadata {
     @Override
@@ -27,6 +28,8 @@ public interface ModuleDependencyMetadata extends DependencyMetadata {
      * Returns a copy of this dependency with the given requested version.
      */
     ModuleDependencyMetadata withRequestedVersion(VersionConstraint requestedVersion);
+
+    ModuleDependencyMetadata withType(DependencyMetadataType newType);
 
     @Override
     ModuleDependencyMetadata withReason(String reason);
