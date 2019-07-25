@@ -59,11 +59,12 @@ class SettingsFactoryTest extends Specification {
         1 * scope.createChild(_) >> scope
 
         when:
-        SettingsFactory settingsFactory = new SettingsFactory(TestUtil.instantiatorFactory().decorateLenient(), serviceRegistryFactory, scriptHandlerFactory);
+        SettingsFactory settingsFactory = new SettingsFactory(
+            TestUtil.instantiatorFactory().decorateLenient(), serviceRegistryFactory, scriptHandlerFactory)
         GradleInternal gradle = Mock(GradleInternal)
 
         DefaultSettings settings = (DefaultSettings) settingsFactory.createSettings(gradle,
-            settingsDir, scriptSource, expectedGradleProperties, startParameter, new RootClassLoaderScope("root", getClass().classLoader, getClass().classLoader, new DummyClassLoaderCache(), Stub(ClassLoaderScopeRegistryListener)));
+            settingsDir, scriptSource, expectedGradleProperties, startParameter, scope)
 
         then:
         gradle.is(settings.gradle)
