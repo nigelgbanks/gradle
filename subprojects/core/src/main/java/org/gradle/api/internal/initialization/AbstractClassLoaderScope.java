@@ -49,4 +49,5 @@ public abstract class AbstractClassLoaderScope implements ClassLoaderScope {
         listener.childScopeCreated(id.getName(), name);
         return new DefaultClassLoaderScope(id.child(name), this, classLoaderCache, listener);
     }
+
 }
