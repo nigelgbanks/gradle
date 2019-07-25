@@ -78,6 +78,7 @@ public class NodeState implements DependencyGraphNode {
     private final boolean isTransitive;
     private final boolean selectedByVariantAwareResolution;
     private final boolean dependenciesMayChange;
+    private final SelectorOverrides selectorOverrides;
     private boolean doesNotHaveDependencies;
 
     ExcludeSpec previousTraversalExclusions;
@@ -122,6 +123,11 @@ public class NodeState implements DependencyGraphNode {
         this.moduleExclusions = resolveState == null ? null : resolveState.getModuleExclusions(); // can be null in tests, ResolveState cannot be mocked
         this.dependenciesMayChange = component.getModule() != null && component.getModule().isVirtualPlatform(); // can be null in tests, ComponentState cannot be mocked
         component.addConfiguration(this);
+        this.selectorOverrides = new SelectorOverrides(id.getId().getModule());
+    }
+
+    void addSelectorOverridesParent(SelectorOverrides parent) {
+        selectorOverrides.addParent(parent);
     }
 
     // the enqueue and dequeue methods are used for performance reasons
@@ -367,7 +373,9 @@ public class NodeState implements DependencyGraphNode {
     private void visitDependencies(ExcludeSpec resolutionFilter, Collection<EdgeState> discoveredEdges) {
         PendingDependenciesVisitor pendingDepsVisitor = resolveState.newPendingDependenciesVisitor();
         try {
-            for (DependencyState dependencyState : dependencies(resolutionFilter)) {
+            List<DependencyState> dependencies = dependencies(resolutionFilter);
+            this.selectorOverrides.setOverridesFromDependencies(dependencies);
+            for (DependencyState dependencyState : dependencies) {
                 dependencyState = maybeSubstitute(dependencyState, resolveState.getDependencySubstitutionApplicator());
                 PendingDependenciesVisitor.PendingState pendingState = pendingDepsVisitor.maybeAddAsPendingDependency(this, dependencyState);
                 if (dependencyState.getDependency().getType() == DependencyMetadataType.CONSTRAINT_ONLY) {
@@ -383,6 +391,21 @@ public class NodeState implements DependencyGraphNode {
             // then reset the state of the node that owns those dependencies.
             // This way, all edges of the node will be re-processed.
             pendingDepsVisitor.complete();
+        }
+    }
+
+    void linkChildrenSelectorOverrides(List<EdgeState> dependencies) {
+        for (EdgeState dependency : dependencies) {
+            SelectorState selector = dependency.getSelector();
+            ComponentState selected = selector.getTargetModule().getSelected();
+            if (selected != null) {
+                for (NodeState directChildNode : selected.getNodes()) {
+                    SelectorOverrides childOverride = directChildNode.selectorOverrides;
+                    if (childOverride != null) {
+                        selectorOverrides.maybeInheritOverrides(childOverride, selector.getSelector());
+                    }
+                }
+            }
         }
     }
 
@@ -443,8 +466,8 @@ public class NodeState implements DependencyGraphNode {
     }
 
     private void createAndLinkEdgeState(DependencyState dependencyState, Collection<EdgeState> discoveredEdges, ExcludeSpec resolutionFilter, boolean deferSelection) {
-        EdgeState dependencyEdge = edgesCache.computeIfAbsent(dependencyState, ds -> new EdgeState(this, ds, resolutionFilter, resolveState));
-        dependencyEdge.getSelector().update(dependencyState);
+        EdgeState dependencyEdge = edgesCache.computeIfAbsent(dependencyState, ds -> new EdgeState(this, ds, resolutionFilter, resolveState, selectorOverrides));
+        dependencyEdge.getSelector().update(dependencyState, true);
         outgoingEdges.add(dependencyEdge);
         discoveredEdges.add(dependencyEdge);
         dependencyEdge.getSelector().use(deferSelection);
@@ -496,7 +519,7 @@ public class NodeState implements DependencyGraphNode {
     }
 
     private void addPlatformEdges(Collection<EdgeState> discoveredEdges, ModuleComponentIdentifier platformComponentIdentifier, ModuleComponentSelector platformSelector) {
-        PotentialEdge potentialEdge = PotentialEdge.of(resolveState, this, platformComponentIdentifier, platformSelector, platformComponentIdentifier);
+        PotentialEdge potentialEdge = PotentialEdge.of(resolveState, this, platformComponentIdentifier, platformSelector, platformComponentIdentifier, selectorOverrides);
         ComponentResolveMetadata metadata = potentialEdge.metadata;
         VirtualPlatformState virtualPlatformState = null;
         if (metadata == null || metadata instanceof LenientPlatformResolveMetadata) {

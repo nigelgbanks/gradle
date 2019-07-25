@@ -56,6 +56,7 @@ class EdgeState implements DependencyGraphEdge {
     private final NodeState from;
     private final SelectorState selector;
     private final ResolveState resolveState;
+    private final SelectorOverrides selectorOverrides;
     private final ExcludeSpec transitiveExclusions;
     private final List<NodeState> targetNodes = Lists.newLinkedList();
     private final boolean isTransitive;
@@ -69,14 +70,15 @@ class EdgeState implements DependencyGraphEdge {
 
     private ResolvedVariantResult resolvedVariant;
 
-    EdgeState(NodeState from, DependencyState dependencyState, ExcludeSpec transitiveExclusions, ResolveState resolveState) {
+    EdgeState(NodeState from, DependencyState dependencyState, ExcludeSpec transitiveExclusions, ResolveState resolveState, SelectorOverrides selectorOverrides) {
         this.from = from;
         this.dependencyState = dependencyState;
         this.dependencyMetadata = dependencyState.getDependency();
         // The accumulated exclusions that apply to this edge based on the path from the root
         this.transitiveExclusions = transitiveExclusions;
         this.resolveState = resolveState;
-        this.selector = resolveState.getSelector(dependencyState);
+        this.selector = resolveState.getSelector(dependencyState, selectorOverrides);
+        this.selectorOverrides = selectorOverrides;
         this.isTransitive = from.isTransitive() && dependencyMetadata.isTransitive();
         this.isConstraint = dependencyMetadata.getType() == DependencyMetadataType.CONSTRAINT_ONLY;
         this.hashCode = computeHashCode();
@@ -258,7 +260,7 @@ class EdgeState implements DependencyGraphEdge {
             return;
         }
         for (ConfigurationMetadata targetConfiguration : targetConfigurations) {
-            NodeState targetNodeState = resolveState.getNode(targetComponent, targetConfiguration);
+            NodeState targetNodeState = resolveState.getNode(targetComponent, targetConfiguration, selectorOverrides);
             this.targetNodes.add(targetNodeState);
         }
     }

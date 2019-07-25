@@ -56,10 +56,10 @@ public class RepositoryChainDependencyToComponentIdResolver implements Dependenc
         ComponentSelector componentSelector = dependency.getSelector();
         if (componentSelector instanceof ModuleComponentSelector) {
             ModuleComponentSelector module = (ModuleComponentSelector) componentSelector;
-            if (acceptor.isDynamic()) {
+            if (acceptor != null && acceptor.isDynamic()) {
                 dynamicRevisionResolver.resolve(toModuleDependencyMetadata(dependency), acceptor, rejector, consumerAttributes, result);
             } else {
-                String version = acceptor.getSelector();
+                String version = acceptor == null ? "" : acceptor.getSelector();
                 ModuleIdentifier moduleId = module.getModuleIdentifier();
                 ModuleComponentIdentifier id = DefaultModuleComponentIdentifier.newId(moduleId, version);
                 ModuleVersionIdentifier mvId = DefaultModuleVersionIdentifier.newId(moduleId, version);

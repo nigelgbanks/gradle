@@ -35,6 +35,7 @@ import org.gradle.api.internal.artifacts.ivyservice.resolveengine.ModuleConflict
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.excludes.ModuleExclusions;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.graph.selectors.ComponentStateFactory;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.graph.selectors.SelectorStateResolver;
+import org.gradle.api.internal.artifacts.ivyservice.resolveengine.result.ComponentSelectionReasons;
 import org.gradle.api.internal.attributes.AttributeDesugaring;
 import org.gradle.api.internal.attributes.AttributesSchemaInternal;
 import org.gradle.api.internal.attributes.ImmutableAttributes;
@@ -50,6 +51,7 @@ import org.gradle.internal.resolve.result.ComponentResolveResult;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -152,21 +154,24 @@ class ResolveState implements ComponentStateFactory<ComponentState> {
         return nodes.size();
     }
 
-    public NodeState getNode(ComponentState module, ConfigurationMetadata configurationMetadata) {
+    public NodeState getNode(ComponentState module, ConfigurationMetadata configurationMetadata, SelectorOverrides selectorOverrides) {
         ResolvedConfigurationIdentifier id = new ResolvedConfigurationIdentifier(module.getId(), configurationMetadata.getName());
-        return nodes.computeIfAbsent(id, rci -> new NodeState(idGenerator.generateId(), id, module, this, configurationMetadata));
+        NodeState nodeState = nodes.computeIfAbsent(id, rci -> new NodeState(idGenerator.generateId(), id, module, this, configurationMetadata));
+        nodeState.addSelectorOverridesParent(selectorOverrides);
+        return nodeState;
     }
 
     public Collection<SelectorState> getSelectors() {
         return selectors.values();
     }
 
-    public SelectorState getSelector(DependencyState dependencyState) {
+    public SelectorState getSelector(DependencyState dependencyState, SelectorOverrides selectorOverrides) {
+        boolean ignoreVersionConstraint = selectorOverrides != null && selectorOverrides.overrideByAllParents(dependencyState.getModuleIdentifier());
         SelectorState selectorState = selectors.computeIfAbsent(dependencyState.getRequested(), req -> {
             ModuleIdentifier moduleIdentifier = dependencyState.getModuleIdentifier();
-            return new SelectorState(idGenerator.generateId(), dependencyState, idResolver, this, moduleIdentifier);
+            return new SelectorState(idGenerator.generateId(), dependencyState, ignoreVersionConstraint, idResolver, this, moduleIdentifier);
         });
-        selectorState.update(dependencyState);
+        selectorState.update(dependencyState, ignoreVersionConstraint);
         return selectorState;
     }
 
