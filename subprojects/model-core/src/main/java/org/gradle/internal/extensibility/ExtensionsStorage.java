@@ -34,6 +34,9 @@ public class ExtensionsStorage {
     public void noBuildCache() {
 
     }
+    public void noBuildCache2() {
+
+    }
 
     private final Map<String, ExtensionHolder> extensions = new LinkedHashMap<String, ExtensionHolder>();
 
