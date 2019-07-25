@@ -226,7 +226,7 @@ fun KotlinClassMetadata.FileFacade.Writer.writePropertyOf(
         visitReceiverParameterType(0).with(receiverType)
         visitReturnType(0).with(returnType)
         (visitExtensions(JvmPropertyExtensionVisitor.TYPE) as JvmPropertyExtensionVisitor).run {
-            visit(flagsOf(), null, getterSignature, null)
+            visit(null, getterSignature, null)
             visitSyntheticMethodForAnnotations(null)
             visitEnd()
         }

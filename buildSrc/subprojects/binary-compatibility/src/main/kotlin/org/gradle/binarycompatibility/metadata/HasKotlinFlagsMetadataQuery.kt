@@ -70,40 +70,32 @@ interface CanBeSatisfied {
 }
 
 
-private
-abstract class SatisfiableClassVisitor : KmClassVisitor(), CanBeSatisfied
-
-
-private
-abstract class SatisfiablePackageVisitor : KmPackageVisitor(), CanBeSatisfied
-
-
 @Suppress("unchecked_cast")
 private
-fun classVisitorFor(memberType: MemberType, jvmSignature: String, predicate: FlagsPredicate): SatisfiableClassVisitor =
+fun <T> classVisitorFor(memberType: MemberType, jvmSignature: String, predicate: FlagsPredicate): T where T : KmClassVisitor, T : CanBeSatisfied =
     when (memberType) {
         MemberType.TYPE -> TypeFlagsKmClassVisitor(jvmSignature, predicate)
         MemberType.FIELD -> FieldFlagsKmClassVisitor(jvmSignature, predicate)
         MemberType.CONSTRUCTOR -> ConstructorFlagsKmClassVisitor(jvmSignature, predicate)
         MemberType.METHOD -> MethodFlagsKmClassVisitor(jvmSignature, predicate)
-    }
+    } as T
 
 
 @Suppress("unchecked_cast")
 private
-fun packageVisitorFor(memberType: MemberType, jvmSignature: String, predicate: FlagsPredicate): SatisfiablePackageVisitor =
+fun <T> packageVisitorFor(memberType: MemberType, jvmSignature: String, predicate: FlagsPredicate): T where T : KmPackageVisitor, T : CanBeSatisfied =
     when (memberType) {
         MemberType.FIELD -> FieldFlagsKmPackageVisitor(jvmSignature, predicate)
         MemberType.METHOD -> MethodFlagsKmPackageVisitor(jvmSignature, predicate)
         else -> NoopFlagsKmPackageVisitor
-    }
+    } as T
 
 
 private
 class TypeFlagsKmClassVisitor(
     private val jvmSignature: String,
     private val predicate: FlagsPredicate
-) : SatisfiableClassVisitor() {
+) : KmClassVisitor(), CanBeSatisfied {
 
     override var isSatisfied = false
 
@@ -123,7 +115,7 @@ private
 class FieldFlagsKmClassVisitor(
     private val jvmSignature: String,
     private val predicate: FlagsPredicate
-) : SatisfiableClassVisitor() {
+) : KmClassVisitor(), CanBeSatisfied {
 
     override var isSatisfied = false
 
@@ -153,7 +145,7 @@ private
 class ConstructorFlagsKmClassVisitor(
     private val jvmSignature: String,
     private val predicate: FlagsPredicate
-) : SatisfiableClassVisitor() {
+) : KmClassVisitor(), CanBeSatisfied {
 
     override var isSatisfied = false
 
@@ -180,7 +172,7 @@ private
 class MethodFlagsKmClassVisitor(
     private val jvmSignature: String,
     private val predicate: FlagsPredicate
-) : SatisfiableClassVisitor() {
+) : KmClassVisitor(), CanBeSatisfied {
 
     override var isSatisfied = false
 
@@ -214,7 +206,7 @@ private
 class FieldFlagsKmPackageVisitor(
     private val jvmSignature: String,
     private val predicate: FlagsPredicate
-) : SatisfiablePackageVisitor() {
+) : KmPackageVisitor(), CanBeSatisfied {
 
     override var isSatisfied = false
 
@@ -244,7 +236,7 @@ private
 class MethodFlagsKmPackageVisitor(
     private val jvmSignature: String,
     private val predicate: FlagsPredicate
-) : SatisfiablePackageVisitor() {
+) : KmPackageVisitor(), CanBeSatisfied {
 
     override var isSatisfied = false
 
@@ -275,7 +267,7 @@ class MethodFlagsKmPackageVisitor(
 
 
 private
-object NoopFlagsKmPackageVisitor : SatisfiablePackageVisitor() {
+object NoopFlagsKmPackageVisitor : KmPackageVisitor(), CanBeSatisfied {
     override var isSatisfied = false
 }
 
