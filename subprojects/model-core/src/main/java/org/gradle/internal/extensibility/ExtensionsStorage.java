@@ -35,6 +35,10 @@ public class ExtensionsStorage {
 
     }
 
+    public void anotherMethod() {
+
+    }
+
     private final Map<String, ExtensionHolder> extensions = new LinkedHashMap<String, ExtensionHolder>();
 
     public <T> void add(TypeOf<T> publicType, String name, T extension) {
