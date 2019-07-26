@@ -208,9 +208,19 @@ public class JvmOptions {
 
         List<String> debugArgs = new ArrayList<>();
         for (Object extraJvmArg : extraJvmArgs) {
-            String extraJvmArgString = extraJvmArg.toString();
-            if (extraJvmArgString.equals("-Xdebug") || extraJvmArgString.startsWith("-Xrunjdwp") || extraJvmArgString.startsWith("-agentlib:jdwp")) {
-                debugArgs.add(extraJvmArgString);
+            switch (extraJvmArg.toString()) {
+                case "-Xdebug":
+                    xdebugFound = true;
+                    matches.add(extraJvmArg);
+                    break;
+                case "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005":
+                    xrunjdwpFound = true;
+                    matches.add(extraJvmArg);
+                    break;
+                case "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005":
+                    xagentlibJdwpFound = true;
+                    matches.add(extraJvmArg);
+                    break;
             }
         }
         if (!debugArgs.isEmpty() && debugOptions.getEnabled().get()) {
